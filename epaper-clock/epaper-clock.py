@@ -55,9 +55,12 @@ from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 
+import RPi.GPIO as GPIO
+
 from datetime import datetime
 import time
 import locale
+import subprocess
 
 COLORED = 1
 UNCOLORED = 0
@@ -81,6 +84,7 @@ def main():
 
     fonts = Fonts(timefont_size = 75, datefont_size = 30)
 
+    read_button4_for_shutdown()
     clock_loop(epd, fonts)
 
 def clock_loop(epd, fonts):
@@ -103,6 +107,16 @@ def draw_clock_data(epd, fonts, datetime_now):
     epd.draw_string_at(frame_black, 20, 100, datestring, fonts.datefont, COLORED)
 #    epd.draw_string_at(frame_red, 50, 120, "e-paper.", font, COLORED)
     epd.display_frame(frame_black, frame_red)
+
+def read_button4_for_shutdown():
+    GPIO.setmode(GPIO.BCM)
+    pin = 19  # 4th button in the 2.7 inch hat this pin according to the schematics.
+    GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(pin, GPIO.FALLING, callback=shutdown_button_pressed, bouncetime=200)
+
+def shutdown_button_pressed(pin):
+    print("Button %d was pressed. Shutting down" % pin)
+    subprocess.call(["sudo", "poweroff"])
 
 if __name__ == '__main__':
     main()
