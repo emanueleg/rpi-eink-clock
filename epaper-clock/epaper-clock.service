@@ -1,0 +1,12 @@
+[Unit]
+Description=Shows clock on an e-paper display
+After=multi-user.target
+
+[Service]
+Type=idle
+User=pi
+Group=pi
+ExecStart=/home/pi/epaper-clock/epaper-clock.py
+
+[Install]
+WantedBy=multi-user.target

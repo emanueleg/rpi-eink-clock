@@ -63,7 +63,7 @@ COLORED = 1
 UNCOLORED = 0
 
 LOCALE="fi_FI"
-DATEFORMAT = "%x"
+DATEFORMAT = "%a %x"
 TIMEFORMAT = "%H:%M"
 FONT = '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf'
 
@@ -92,7 +92,7 @@ def clock_loop(epd, fonts):
         time.sleep(seconds_until_next_minute)
 
 def draw_clock_data(epd, fonts, datetime_now):
-    datestring = datetime_now.strftime(DATEFORMAT)
+    datestring = datetime_now.strftime(DATEFORMAT).capitalize()
     timestring = datetime_now.strftime(TIMEFORMAT)
 
     # Create frame buffers
@@ -100,7 +100,7 @@ def draw_clock_data(epd, fonts, datetime_now):
     frame_red = [0] * (epd.width * epd.height / 8)
 
     epd.draw_string_at(frame_black, 20, 20, timestring, fonts.timefont, COLORED)
-    epd.draw_string_at(frame_black, 50, 100, datestring, fonts.datefont, COLORED)
+    epd.draw_string_at(frame_black, 20, 100, datestring, fonts.datefont, COLORED)
 #    epd.draw_string_at(frame_red, 50, 120, "e-paper.", font, COLORED)
     epd.display_frame(frame_black, frame_red)
 
