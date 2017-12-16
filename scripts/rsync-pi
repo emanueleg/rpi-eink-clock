@@ -1,0 +1,13 @@
+#!/bin/bash -xeu
+
+pi=${1:-192.168.0.21}
+
+# Hmm.
+script_dir=$(dirname ${0})
+epaper_dir="${script_dir}/../epaper-clock"
+if [ ! -d "${epaper_dir}" ] ; then
+   echo "epaper-clock not found. Cannot rsync"
+   exit 1
+fi
+
+rsync -avz "${epaper_dir}" "pi@${pi}:"
