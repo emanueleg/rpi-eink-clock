@@ -38,6 +38,8 @@ from datetime import datetime
 import time
 import locale
 import subprocess
+import psutil
+import socket
 
 LOCALE="it_IT.UTF8"
 DATEFORMAT = "%a %x"
@@ -45,9 +47,10 @@ TIMEFORMAT = "%H:%M"
 FONT = '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf'
 
 class Fonts:
-    def __init__(self, timefont_size, datefont_size):
+    def __init__(self, timefont_size, datefont_size, infofont_size):
         self.timefont = ImageFont.truetype(FONT, timefont_size)
         self.datefont = ImageFont.truetype(FONT, datefont_size)
+        self.infofont = ImageFont.truetype(FONT, infofont_size)
 
 def main():
     locale.setlocale(locale.LC_ALL, LOCALE)
@@ -55,15 +58,25 @@ def main():
     epd = epd2in7.EPD()
     epd.init()
 
-    fonts = Fonts(timefont_size = 75, datefont_size = 26)
+    fonts = Fonts(timefont_size = 75, datefont_size = 26, infofont_size = 18)
 
-    read_button4_for_shutdown()
-    clock_loop(epd, fonts)
+    read_button2()
+    read_button3()
+    read_button4()
+    system_loop(epd, fonts)
+    #clock_loop(epd, fonts)
 
 def clock_loop(epd, fonts):
     while True:
         now = datetime.now()
         draw_clock_data(epd, fonts, now)
+        now = datetime.now()
+        seconds_until_next_minute = 60 - now.time().second
+        time.sleep(seconds_until_next_minute)
+
+def system_loop(epd, fonts):
+    while True:
+        draw_system_data(epd, fonts)
         now = datetime.now()
         seconds_until_next_minute = 60 - now.time().second
         time.sleep(seconds_until_next_minute)
@@ -78,16 +91,44 @@ def draw_clock_data(epd, fonts, datetime_now):
     draw.text((20, 100), datestring, font = fonts.datefont, fill = 0)
     epd.display(epd.getbuffer(Limage))
 
+def draw_system_data(epd, fonts):
+    corestring = str(psutil.cpu_count()) + ' CPU @ ' + str(psutil.cpu_freq().current) + ' MHz';
+    usagestring = 'CPU usage: ' + str(psutil.cpu_percent());
+    memstring = 'RAM: ' + str(int(psutil.virtual_memory().available/(1024*1024))) + ' MiB';
+    tempstring = 'CPU Temp. ' + str(round(psutil.sensors_temperatures(fahrenheit=False)['cpu_thermal'][0].current)) + ' °C';
+    psstring = 'Running ps: ' + str(len(psutil.pids()))
+    sysstring = corestring + '\n' + usagestring + '\n' + memstring + '\n' + tempstring + '\n' + psstring
+    
+    #iflist = [name for name in psutil.net_if_addrs().keys()]
+    netstring = '\n'.join([str(ifname +' '+str(ip.address)) for ifname in psutil.net_if_addrs().keys() for ip in psutil.net_if_addrs()[ifname] if ip.family == socket.AF_INET])
 
-def read_button4_for_shutdown():
+    Limage = Image.new('1', (epd.height, epd.width), 255)
+    draw = ImageDraw.Draw(Limage)
+    draw.text((10, 10), sysstring, font = fonts.infofont, fill = 0)
+    draw.text((10, 110), netstring, font = fonts.infofont, fill = 0)
+    epd.display(epd.getbuffer(Limage))
+
+def read_button2():
+    GPIO.setmode(GPIO.BCM)
+    pin = 6  # 2nd button
+    GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(pin, GPIO.FALLING, callback=button_pressed, bouncetime=200)
+
+def read_button3():
+    GPIO.setmode(GPIO.BCM)
+    pin = 13  # 3rd button
+    GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(pin, GPIO.FALLING, callback=button_pressed, bouncetime=200)
+
+def read_button4():
     GPIO.setmode(GPIO.BCM)
     pin = 19  # 4th button in the 2.7 inch hat this pin according to the schematics.
     GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.add_event_detect(pin, GPIO.FALLING, callback=shutdown_button_pressed, bouncetime=200)
+    GPIO.add_event_detect(pin, GPIO.FALLING, callback=button_pressed, bouncetime=200)
 
-def shutdown_button_pressed(pin):
-    print("Button %d was pressed. Shutting down" % pin)
-    subprocess.call(["sudo", "poweroff"])
+def button_pressed(pin):
+    print("Button %d was pressed..." % pin)
+    #subprocess.call(["sudo", "poweroff"])
 
 if __name__ == '__main__':
     main()
