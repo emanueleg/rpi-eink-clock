@@ -3,7 +3,7 @@
 ##
 # epaper-clock.py
 #
-# Copyright (C) Emanuele Goldoni 2019
+# Copyright (C) Emanuele Goldoni 2020
 #
 # original author: Jukka Aittola (jaittola(at)iki.fi) 2017
 #
@@ -54,6 +54,11 @@ PIN_BTN2 = 6
 PIN_BTN3 = 13
 PIN_BTN4 = 19
 
+DISPMODE_LOGO = 1
+DISPMODE_SYSSTATS = 2
+DISPMODE_CLOCK = 3
+DISPMODE_UNDEF = 4
+
 class Fonts:
     def __init__(self, timefont_size, datefont_size, infofont_size):
         self.timefont = ImageFont.truetype(FONT, timefont_size)
@@ -64,7 +69,7 @@ class Display:
     
     epd = None
     fonts = None
-    mode = 1
+    mode = DISPMODE_LOGO
     
     def __init__(self):
         locale.setlocale(locale.LC_ALL, LOCALE)
@@ -76,9 +81,9 @@ class Display:
 
     def start(self):
         while True:
-            if 2 == self.mode:
+            if DISPMODE_SYSSTATS == self.mode:
                 self.draw_system_data()
-            elif 3 == self.mode:
+            elif DISPMODE_CLOCK == self.mode:
                 self.draw_clock_data()
             else:
                 self.draw_rpi_logo()
@@ -139,15 +144,15 @@ class Display:
         #print("Button %d was pressed..." % pin)
         if PIN_BTN1 == pin:
             self.draw_rpi_logo()
-            self.mode = 1
+            self.mode = DISPMODE_LOGO
         elif PIN_BTN2 == pin:
             self.draw_system_data()
-            self.mode = 2
+            self.mode = DISPMODE_SYSSTATS
         elif PIN_BTN3 == pin:
             self.draw_clock_data()
-            self.mode = 3
+            self.mode = DISPMODE_CLOCK
         elif PIN_BTN4 == pin:
-            self.mode = 4
+            self.mode = DISPMODE_UNDEF
             print("Shutting down system...")
             #subprocess.call(["sudo", "poweroff"])
 
