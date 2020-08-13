@@ -47,7 +47,7 @@ LOCALE="it_IT.UTF8"
 DATEFORMAT = "%a %x"
 TIMEFORMAT = "%H:%M"
 FONT = '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf'
-BOUNCETIME = 200
+BOUNCETIME = 500
 
 PIN_BTN1 = 5
 PIN_BTN2 = 6
@@ -68,14 +68,11 @@ class Display:
     
     def __init__(self):
         locale.setlocale(locale.LC_ALL, LOCALE)
-
+        self.fonts = Fonts(timefont_size = 75, datefont_size = 26, infofont_size = 18)
+        
         self.epd = epd2in7.EPD()
         self.epd.init()
-        
-        self.fonts = Fonts(timefont_size = 75, datefont_size = 26, infofont_size = 18)
-
         self.read_buttons()
-        self.draw_rpi_logo()
 
     def start(self):
         while True:
@@ -109,15 +106,17 @@ class Display:
         self.epd.display(self.epd.getbuffer(Limage))
 
     def draw_system_data(self):
-        corestring = str(psutil.cpu_count()) + ' CPU @ ' + str(psutil.cpu_freq().current) + ' MHz';
+        corestring = 'CPU freq: ' + str(psutil.cpu_freq().current) + ' MHz';
         usagestring = 'CPU usage: ' + str(psutil.cpu_percent());
-        memstring = 'RAM: ' + str(int(psutil.virtual_memory().available/(1024*1024))) + ' MiB';
-        tempstring = 'CPU Temp. ' + str(round(psutil.sensors_temperatures(fahrenheit=False)['cpu_thermal'][0].current)) + ' \u00b0C';
+        tempstring = 'CPU temp. ' + str(round(psutil.sensors_temperatures(fahrenheit=False)['cpu_thermal'][0].current)) + ' \u00b0C';
+        memstring = 'Free RAM: ' + str(int(psutil.virtual_memory().available/(1024*1024))) + ' MiB';
         psstring = 'Running ps: ' + str(len(psutil.pids()))
-        sysstring = corestring + '\n' + usagestring + '\n' + memstring + '\n' + tempstring + '\n' + psstring
-        
+                
         #iflist = [name for name in psutil.net_if_addrs().keys()]
-        netstring = '\n'.join([str(ifname +' '+str(ip.address)) for ifname in psutil.net_if_addrs().keys() for ip in psutil.net_if_addrs()[ifname] if ip.family == socket.AF_INET])
+        ifaddresses = [ifname+' '+str(ip.address) for ifname in psutil.net_if_addrs().keys() for ip in psutil.net_if_addrs()[ifname] if ip.family == socket.AF_INET]
+        
+        sysstring = corestring + '\n' + usagestring + '\n' + tempstring + '\n' + memstring + '\n' + psstring
+        netstring = '\n'.join(ifaddresses)
 
         Limage = Image.new('1', (self.epd.height, self.epd.width), 255)
         draw = ImageDraw.Draw(Limage)
