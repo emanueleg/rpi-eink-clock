@@ -71,7 +71,11 @@ class Display:
         self.epd.init()
         self.read_buttons()
 
-    def start(self):
+    def start(self, start_mode = DISPMODE_LOGO):
+        if not type(start_mode)==int:
+            self.mode = DISPMODE_LOGO
+        else:
+            self.mode = start_mode
         while True:
             if DISPMODE_SYSSTATS == self.mode:
                 self.draw_system_data()
@@ -80,6 +84,7 @@ class Display:
             elif DISPMODE_NOBEL == self.mode: 
                 self.draw_rnd_nobel_info()
             else:
+                self.mode = DISPMODE_LOGO
                 self.draw_rpi_logo()
             self.sleep_until_next_min()
     
@@ -169,6 +174,7 @@ class Display:
             self.draw_rnd_nobel_info()
             self.mode = DISPMODE_NOBEL
 
+
 if __name__ == '__main__':
     display = Display()
-    display.start()
+    display.start(DISPMODE_CLOCK)
