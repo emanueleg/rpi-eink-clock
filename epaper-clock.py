@@ -125,12 +125,13 @@ class Display:
     
     def draw_rnd_nobel_info(self):
         p = random.choice(self.nobeldata['prizes'])
-        print(p) #just debugging
+        #print(p) #just debugging
         y = p['year']
         c = p['category'].title()
         if ('laureates' in p.keys()):
             w = random.choice(p['laureates'])
-            n = w['firstname'] + ' ' + w['surname']
+            n = w['firstname']
+            n += ' '+w['surname'] if 'surname' in w.keys() else ""
             m = w['motivation']
         else:
             n = ""
