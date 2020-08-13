@@ -49,6 +49,11 @@ TIMEFORMAT = "%H:%M"
 FONT = '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf'
 BOUNCETIME = 200
 
+PIN_BTN1 = 5
+PIN_BTN2 = 6
+PIN_BTN3 = 13
+PIN_BTN4 = 19
+
 class Fonts:
     def __init__(self, timefont_size, datefont_size, infofont_size):
         self.timefont = ImageFont.truetype(FONT, timefont_size)
@@ -69,10 +74,7 @@ class Display:
         
         self.fonts = Fonts(timefont_size = 75, datefont_size = 26, infofont_size = 18)
 
-        self.read_button1()
-        self.read_button2()
-        self.read_button3()
-        self.read_button4()
+        self.read_buttons()
         self.draw_rpi_logo()
 
     def start(self):
@@ -123,43 +125,29 @@ class Display:
         draw.text((10, 110), netstring, font = self.fonts.infofont, fill = 0)
         self.epd.display(self.epd.getbuffer(Limage))
 
-
-    def read_button1(self):
+    def read_buttons(self):
         GPIO.setmode(GPIO.BCM)
-        pin = 5  # 2nd button
-        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(pin, GPIO.FALLING, callback=self.button_pressed, bouncetime=BOUNCETIME)
-
-    def read_button2(self):
-        GPIO.setmode(GPIO.BCM)
-        pin = 6  # 2nd button
-        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(pin, GPIO.FALLING, callback=self.button_pressed, bouncetime=BOUNCETIME)
-
-    def read_button3(self):
-        GPIO.setmode(GPIO.BCM)
-        pin = 13  # 3rd button
-        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(pin, GPIO.FALLING, callback=self.button_pressed, bouncetime=BOUNCETIME)
-
-    def read_button4(self):
-        GPIO.setmode(GPIO.BCM)
-        pin = 19  # 4th button in the 2.7 inch hat this pin according to the schematics.
-        GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.add_event_detect(pin, GPIO.FALLING, callback=self.button_pressed, bouncetime=BOUNCETIME)
+        GPIO.setup(PIN_BTN1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.add_event_detect(PIN_BTN1, GPIO.FALLING, callback=self.button_pressed, bouncetime=BOUNCETIME)
+        GPIO.setup(PIN_BTN2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.add_event_detect(PIN_BTN2, GPIO.FALLING, callback=self.button_pressed, bouncetime=BOUNCETIME)
+        GPIO.setup(PIN_BTN3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.add_event_detect(PIN_BTN3, GPIO.FALLING, callback=self.button_pressed, bouncetime=BOUNCETIME)
+        GPIO.setup(PIN_BTN4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.add_event_detect(PIN_BTN4, GPIO.FALLING, callback=self.button_pressed, bouncetime=BOUNCETIME)
 
     def button_pressed(self, pin):
         #print("Button %d was pressed..." % pin)
-        if 5 == pin:
+        if PIN_BTN1 == pin:
             self.draw_rpi_logo()
             self.mode = 1
-        elif 6 == pin:
+        elif PIN_BTN2 == pin:
             self.draw_system_data()
             self.mode = 2
-        elif 13 == pin:
+        elif PIN_BTN3 == pin:
             self.draw_clock_data()
             self.mode = 3
-        elif 19 == pin:
+        elif PIN_BTN4 == pin:
             self.mode = 4
             print("Shutting down system...")
             #subprocess.call(["sudo", "poweroff"])
