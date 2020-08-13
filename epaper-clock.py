@@ -42,12 +42,17 @@ import psutil
 import socket
 #import sys
 import os
+import json
+import random
+import textwrap
 
 LOCALE="it_IT.UTF8"
 DATEFORMAT = "%a %x"
 TIMEFORMAT = "%H:%M"
-FONT = '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf'
+FONT = '/usr/share/fonts/truetype/freefont/FreeMono.ttf'
+FONTBOLD = '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf'
 BOUNCETIME = 500
+NOBELPRIZE_JSON = 'prize.json'
 
 PIN_BTN1 = 5
 PIN_BTN2 = 6
@@ -57,23 +62,28 @@ PIN_BTN4 = 19
 DISPMODE_LOGO = 1
 DISPMODE_SYSSTATS = 2
 DISPMODE_CLOCK = 3
-DISPMODE_UNDEF = 4
+DISPMODE_NOBEL = 4
 
 class Fonts:
-    def __init__(self, timefont_size, datefont_size, infofont_size):
-        self.timefont = ImageFont.truetype(FONT, timefont_size)
-        self.datefont = ImageFont.truetype(FONT, datefont_size)
-        self.infofont = ImageFont.truetype(FONT, infofont_size)
+    def __init__(self, timefont_size, datefont_size, infofont_size, smallfont_size):
+        self.timefont = ImageFont.truetype(FONTBOLD, timefont_size)
+        self.datefont = ImageFont.truetype(FONTBOLD, datefont_size)
+        self.infofont = ImageFont.truetype(FONTBOLD, infofont_size)
+        self.smallfont = ImageFont.truetype(FONT, smallfont_size)
 
 class Display:
     
     epd = None
     fonts = None
-    mode = DISPMODE_LOGO
+    mode = DISPMODE_NOBEL
+    nobeldata = None
     
     def __init__(self):
         locale.setlocale(locale.LC_ALL, LOCALE)
-        self.fonts = Fonts(timefont_size = 75, datefont_size = 26, infofont_size = 18)
+        self.fonts = Fonts(timefont_size = 75, datefont_size = 26, infofont_size = 18, smallfont_size=16)
+
+        with open(os.path.join('.', NOBELPRIZE_JSON)) as f:
+            self.nobeldata = json.load(f)
         
         self.epd = epd2in7.EPD()
         self.epd.init()
@@ -85,6 +95,8 @@ class Display:
                 self.draw_system_data()
             elif DISPMODE_CLOCK == self.mode:
                 self.draw_clock_data()
+            elif DISPMODE_NOBEL == self.mode: 
+                self.draw_rnd_nobel_info()
             else:
                 self.draw_rpi_logo()
             self.sleep1min()
@@ -128,6 +140,25 @@ class Display:
         draw.text((10, 10), sysstring, font = self.fonts.infofont, fill = 0)
         draw.text((10, 110), netstring, font = self.fonts.infofont, fill = 0)
         self.epd.display(self.epd.getbuffer(Limage))
+    
+    def draw_rnd_nobel_info(self):
+        p = random.choice(self.nobeldata['prizes'])
+        print(p) #just debugging
+        y = p['year']
+        c = p['category'].title()
+        if ('laureates' in p.keys()):
+            w = random.choice(p['laureates'])
+            n = w['firstname'] + ' ' + w['surname']
+            m = w['motivation']
+        else:
+            n = ""
+            m = p['overallMotivation']
+        Limage = Image.new('1', (self.epd.height, self.epd.width), 255)
+        draw = ImageDraw.Draw(Limage)
+        draw.text((5, 5), c + ' (' + y + ')', font = self.fonts.infofont, fill = 0)
+        draw.text((5, 27), n, font = self.fonts.infofont, fill = 0)
+        draw.text((5, 50), textwrap.fill(textwrap.shorten(m, 140), 25), font = self.fonts.smallfont, fill = 0)
+        self.epd.display(self.epd.getbuffer(Limage))
 
     def read_buttons(self):
         GPIO.setmode(GPIO.BCM)
@@ -152,9 +183,8 @@ class Display:
             self.draw_clock_data()
             self.mode = DISPMODE_CLOCK
         elif PIN_BTN4 == pin:
-            self.mode = DISPMODE_UNDEF
-            print("Shutting down system...")
-            #subprocess.call(["sudo", "poweroff"])
+            self.draw_rnd_nobel_info()
+            self.mode = DISPMODE_NOBEL
 
 if __name__ == '__main__':
     display = Display()
