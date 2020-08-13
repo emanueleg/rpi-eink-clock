@@ -40,6 +40,8 @@ import locale
 import subprocess
 import psutil
 import socket
+#import sys
+import os
 
 LOCALE="it_IT.UTF8"
 DATEFORMAT = "%a %x"
@@ -63,23 +65,31 @@ def main():
     read_button2()
     read_button3()
     read_button4()
-    system_loop(epd, fonts)
+    draw_rpi_logo(epd)
+    #system_loop(epd, fonts)
     #clock_loop(epd, fonts)
+
+def go_to_sleep(sleep_secs):
+    now = datetime.now()
+    seconds_until_next_minute = sleep_secs - now.time().second
+    time.sleep(seconds_until_next_minute)
 
 def clock_loop(epd, fonts):
     while True:
         now = datetime.now()
         draw_clock_data(epd, fonts, now)
-        now = datetime.now()
-        seconds_until_next_minute = 60 - now.time().second
-        time.sleep(seconds_until_next_minute)
+        go_to_sleep(60)
 
 def system_loop(epd, fonts):
     while True:
         draw_system_data(epd, fonts)
-        now = datetime.now()
-        seconds_until_next_minute = 60 - now.time().second
-        time.sleep(seconds_until_next_minute)
+        go_to_sleep(60)
+
+def draw_rpi_logo(epd):
+    Himage = Image.open(os.path.join('.', 'raspberry.bmp'))
+    epd.display(epd.getbuffer(Himage))
+    while True:
+        go_to_sleep(60)
 
 def draw_clock_data(epd, fonts, datetime_now):
     datestring = datetime_now.strftime(DATEFORMAT).capitalize()
