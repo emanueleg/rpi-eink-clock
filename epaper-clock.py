@@ -81,9 +81,9 @@ class Display:
                 self.draw_rnd_nobel_info()
             else:
                 self.draw_rpi_logo()
-            self.sleep1min()
+            self.sleep_until_next_min()
     
-    def sleep1min(self):
+    def sleep_until_next_min(self):
         now = datetime.now()
         seconds_until_next_minute = 60 - now.time().second
         time.sleep(seconds_until_next_minute)
