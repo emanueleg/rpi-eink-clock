@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 ##
 # epaper-clock.py
@@ -95,7 +95,7 @@ def draw_system_data(epd, fonts):
     corestring = str(psutil.cpu_count()) + ' CPU @ ' + str(psutil.cpu_freq().current) + ' MHz';
     usagestring = 'CPU usage: ' + str(psutil.cpu_percent());
     memstring = 'RAM: ' + str(int(psutil.virtual_memory().available/(1024*1024))) + ' MiB';
-    tempstring = 'CPU Temp. ' + str(round(psutil.sensors_temperatures(fahrenheit=False)['cpu_thermal'][0].current)) + ' °C';
+    tempstring = 'CPU Temp. ' + str(round(psutil.sensors_temperatures(fahrenheit=False)['cpu_thermal'][0].current)) + ' \u00b0C';
     psstring = 'Running ps: ' + str(len(psutil.pids()))
     sysstring = corestring + '\n' + usagestring + '\n' + memstring + '\n' + tempstring + '\n' + psstring
     
