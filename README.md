@@ -10,6 +10,8 @@ The eInk Smart Clock has multiple display modes, selectable using the four push-
 - System statics  (CPU, RAM, Processes, IP addresses)
 - Nobel Prize information (year, category, winner and motivation - offline dump of the official data obtained from http://api.nobelprize.org/v1/prize.json)
 
+Data are refreshed every minute.
+
 ## Buttons
 
 - Button 1: Show Raspberry Logo
