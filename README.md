@@ -17,6 +17,10 @@ The eInk Smart Clock has multiple display modes, selectable using the four push-
 - Button 3: Show Clock (time & date)
 - Button 4: Show random Nobel info
 
+### Photos
+
+![Button 1](resources/www_btn1234.jpg)
+
 ## Hardware Requirements
 
 - Raspberry Pi 3
