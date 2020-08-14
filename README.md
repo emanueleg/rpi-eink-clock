@@ -31,9 +31,30 @@ Data are refreshed every minute.
 
 ## Installation
 
-- Install [Raspberry Pi OS](https://www.raspberrypi.org/downloads/) on SD card (```python3``` should be already present on Raspberry Pi OS)
+- Install [Raspberry Pi OS](https://www.raspberrypi.org/downloads/) on SD card and boot the system
+- Open a terminal
+- ```python3``` should be already present on Raspberry Pi OS - you may want to verify this by running: ```python3 --version```
+- Enable SPI:
+  - Run the configuration tool: ```sudo raspi-config```
+  - Choose: ``Interfacing Options -> SPI -> Yes```  to enable SPI interface
+  - Reboot: ```sudo reboot```
+- Reopen a terminal
+- Update package list: ```sudo apt-get update```
+- Install required libraries and python modules
+  - Install BCM2835 libraries
+    - ```wget http://www.airspayce.com/mikem/bcm2835/bcm2835-1.68.tar.gz```
+    - ```tar zxvf bcm2835-1.60.tar.gz```
+    - ```cd bcm2835-1.60/```
+    - ```./configure```
+    - ```make```
+    - ```sudo make install```
+  - Install wiringPI: ```sudo apt-get install wiringpi```
+  - Install Python3 libraries
+    - ```sudo apt-get install python3-pip python3-pil python3-numpy```
+    - ```sudo pip3 install RPi.GPIO```
+    - ```sudo pip3 install spidev```
 - Install git: ```sudo apt install git```
-- Issue the command to fetch this project: ```git clone https://github.com/emanueleg/rpi-eink-clock.git```
+- Fetch this project: ```git clone https://github.com/emanueleg/rpi-eink-clock.git```
 - Enter the project directory: ```cd rpi-eink-clock``` and install required libraries and python modules [TODO]
 - Run the script: ```./epaper-clock``` and verify if it works as expected (hit Ctrl-C to exit)
 - If you want the script run at every boot, install this project as service so it could automatically run when Raspberry boots up [TODO]
