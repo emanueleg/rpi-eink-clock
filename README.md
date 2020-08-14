@@ -20,7 +20,7 @@ The eInk Smart Clock has multiple display modes, selectable using the four push-
 ## Hardware Requirements
 
 - Raspberry Pi 3
-- [2.7inch E-Ink display HAT for Raspberry Pi](https://www.waveshare.com/product/modules/oleds-lcds/e-paper/2.7inch-e-paper-hat.htm?___SID=U)
+- [2.7inch E-Ink display HAT for Raspberry Pi](https://www.waveshare.com/product/raspberry-pi/displays/e-paper/2.7inch-e-paper-hat.htm)
 - 8+ GB SD card
 
 ## Installation
