@@ -64,7 +64,7 @@ class Display:
         locale.setlocale(locale.LC_ALL, LOCALE)
         self.fonts = Fonts(timefont_size = 75, datefont_size = 26, infofont_size = 18, smallfont_size=16)
 
-        with open(os.path.join('.', NOBELPRIZE_JSON)) as f:
+        with open(os.path.join('./resources', NOBELPRIZE_JSON)) as f:
             self.nobeldata = json.load(f)
         
         self.epd = epd2in7.EPD()
@@ -94,7 +94,7 @@ class Display:
         time.sleep(seconds_until_next_minute)
 
     def draw_rpi_logo(self):
-        Himage = Image.open(os.path.join('.', 'raspberry.bmp'))
+        Himage = Image.open(os.path.join('./resources', 'raspberry.bmp'))
         self.epd.display(self.epd.getbuffer(Himage))
 
 
