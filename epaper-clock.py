@@ -34,7 +34,9 @@ TIMEFORMAT = "%H:%M"
 FONT = '/usr/share/fonts/truetype/freefont/FreeMono.ttf'
 FONTBOLD = '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf'
 BOUNCETIME = 500
-NOBELPRIZE_JSON = 'prize.json'
+
+NOBELPRIZE_JSON = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'resources/prize.json')
+RASPBERRY_BMP_LOGO = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'resources/raspberry.bmp')
 
 PIN_BTN1 = 5
 PIN_BTN2 = 6
@@ -64,7 +66,7 @@ class Display:
         locale.setlocale(locale.LC_ALL, LOCALE)
         self.fonts = Fonts(timefont_size = 75, datefont_size = 26, infofont_size = 18, smallfont_size=16)
 
-        with open(os.path.join('./resources', NOBELPRIZE_JSON)) as f:
+        with open(NOBELPRIZE_JSON) as f:
             self.nobeldata = json.load(f)
         
         self.epd = epd2in7.EPD()
@@ -94,7 +96,7 @@ class Display:
         time.sleep(seconds_until_next_minute)
 
     def draw_rpi_logo(self):
-        Himage = Image.open(os.path.join('./resources', 'raspberry.bmp'))
+        Himage = Image.open(RASPBERRY_BMP_LOGO)
         self.epd.display(self.epd.getbuffer(Himage))
 
 
