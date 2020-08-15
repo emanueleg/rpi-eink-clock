@@ -56,7 +56,13 @@ Data are refreshed every minute.
 - Fetch this project: ```git clone https://github.com/emanueleg/rpi-eink-clock.git```
 - Enter the project directory: ```cd rpi-eink-clock``` and install required libraries and python modules
 - Run the script: ```./epaper-clock.py``` and verify if it works as expected (hit Ctrl-C to exit)
-- If you want the script run at every boot, install this project as service so it could automatically run when Raspberry boots up [TODO]
+- If you want the script run at every boot, install this project as service so it could automatically run when Raspberry boots up
+  - copy ```epaper-clock.service``` to ```/etc/systemd/system```: ```sudo cp epaper.service /etc/systemd/system/```
+  - verify if service works: ```sudo systemctl start epaper.service```
+  - enable this script so it could be run on system start: ```sudo systemctl enable epaper.service```
+  - reboot device to verify if it works: ```sudo reboot```
+  - if you edit the python script, you can restart the service without rebooting the system: ```sudo systemctl restart epaper.service```
+  - logs can be followed with ```sudo tail -f /var/log/syslog | grep epaper-clock```
 
 ## License
 
