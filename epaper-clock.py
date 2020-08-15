@@ -27,14 +27,17 @@ import json
 import random
 import textwrap
 
+
+RES_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'resources/')
+
 DATEFORMAT = "%a %x"
 TIMEFORMAT = "%H:%M"
-FONT = '/usr/share/fonts/truetype/freefont/FreeMono.ttf'
-FONTBOLD = '/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf'
+FONT = os.path.join(RES_DIR, 'FreeMono.ttf')
+FONTBOLD = os.path.join(RES_DIR, 'FreeMonoBold.ttf')
 BOUNCETIME = 500
 
-NOBELPRIZE_JSON = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'resources/prize.json')
-RASPBERRY_BMP_LOGO = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'resources/raspberry.bmp')
+NOBELPRIZE_JSON = os.path.join(RES_DIR, 'prize.json')
+RASPBERRY_BMP_LOGO = os.path.join(RES_DIR, 'raspberry.bmp')
 
 PIN_BTN1 = 5
 PIN_BTN2 = 6
