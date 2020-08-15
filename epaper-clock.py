@@ -22,13 +22,11 @@ import locale
 import subprocess
 import psutil
 import socket
-#import sys
 import os
 import json
 import random
 import textwrap
 
-LOCALE="it_IT.UTF8"
 DATEFORMAT = "%a %x"
 TIMEFORMAT = "%H:%M"
 FONT = '/usr/share/fonts/truetype/freefont/FreeMono.ttf'
@@ -59,11 +57,11 @@ class Display:
     
     epd = None
     fonts = None
-    mode = DISPMODE_NOBEL
+    mode = DISPMODE_LOGO
     nobeldata = None
     
     def __init__(self):
-        locale.setlocale(locale.LC_ALL, LOCALE)
+        locale.setlocale(locale.LC_ALL, '')
         self.fonts = Fonts(timefont_size = 75, datefont_size = 26, infofont_size = 18, smallfont_size=16)
 
         with open(NOBELPRIZE_JSON) as f:
@@ -74,10 +72,7 @@ class Display:
         self.read_buttons()
 
     def start(self, start_mode = DISPMODE_LOGO):
-        if not type(start_mode)==int:
-            self.mode = DISPMODE_LOGO
-        else:
-            self.mode = start_mode
+        self.mode = start_mode
         while True:
             if DISPMODE_SYSSTATS == self.mode:
                 self.draw_system_data()
@@ -98,7 +93,6 @@ class Display:
     def draw_rpi_logo(self):
         Himage = Image.open(RASPBERRY_BMP_LOGO)
         self.epd.display(self.epd.getbuffer(Himage))
-
 
     def draw_clock_data(self):
         datetime_now = datetime.now()
@@ -143,6 +137,7 @@ class Display:
         else:
             n = ""
             m = p['overallMotivation']
+
         Limage = Image.new('1', (self.epd.height, self.epd.width), 255)
         draw = ImageDraw.Draw(Limage)
         draw.text((5, 5), c + ' (' + y + ')', font = self.fonts.infofont, fill = 0)
@@ -162,19 +157,18 @@ class Display:
         GPIO.add_event_detect(PIN_BTN4, GPIO.FALLING, callback=self.button_pressed, bouncetime=BOUNCETIME)
 
     def button_pressed(self, pin):
-        #print("Button %d was pressed..." % pin)
         if PIN_BTN1 == pin:
-            self.draw_rpi_logo()
             self.mode = DISPMODE_LOGO
+            self.draw_rpi_logo()
         elif PIN_BTN2 == pin:
+            self.mode = DISPMODE_SYSSTATS            
             self.draw_system_data()
-            self.mode = DISPMODE_SYSSTATS
         elif PIN_BTN3 == pin:
-            self.draw_clock_data()
             self.mode = DISPMODE_CLOCK
+            self.draw_clock_data()
         elif PIN_BTN4 == pin:
+            self.mode = DISPMODE_NOBEL            
             self.draw_rnd_nobel_info()
-            self.mode = DISPMODE_NOBEL
 
 
 if __name__ == '__main__':
