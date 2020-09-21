@@ -1,6 +1,6 @@
 # Raspberry Pi eInk Smart Screen
 
-_Smart Clock / Sysmon / Nobel-card for Raspbery Pi 3 using the e-Paper 2.7 inch display from Waveshare._
+_Smart Clock / Sysmon / Nobel-card for Raspbery Pi 3/4 using the e-Paper 2.7 inch display from Waveshare._
 
 Originally inspired by the [vekkari](https://github.com/jaittola/vekkari) project by [Jukka Aittola](https://github.com/jaittola), this project has quickly evolved into a new project: a fully-featured smart clock. All you need is a Raspberry-Pi 3/4 and the e-Paper 2.7 inch display from Waveshare.
 
@@ -25,7 +25,7 @@ Data are refreshed every minute.
 
 ## Hardware Requirements
 
-- Raspberry Pi 3
+- Raspberry Pi 3/4
 - [2.7inch E-Ink display HAT for Raspberry Pi](https://www.waveshare.com/product/raspberry-pi/displays/e-paper/2.7inch-e-paper-hat.htm)
 - 8+ GB SD card
 
